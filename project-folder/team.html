@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Team | VNST Staking</title>
+    <script src="https://cdn.jsdelivr.net/npm/web3@1.8.0/dist/web3.min.js"></script>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="icon" href="assets/favicon.ico" type="image/x-icon">
+</head>
+<body>
+    <nav class="navbar">
+      <img src="assets/logo.png" alt="VNST Logo" class="logo">
+      <button class="mobile-menu-btn" id="mobileMenuBtn">☰</button>
+      <ul id="navMenu">
+        <li><a href="index.html" class="active">Home</a></li>
+        <li><a href="stake.html">Stake</a></li>
+        <li><a href="team.html">Team</a></li>
+        <li class="nav-btn-container">
+          <button class="wallet-connect-btn" id="connectWalletBtn">Connect Wallet</button>
+        </li>
+        <li class="network-switcher-container">
+          <div class="network-switcher">
+            <span id="networkIndicator" class="network-indicator">Testnet</span>
+            <button id="networkSwitchBtn" class="network-switch-btn">
+              Switch to Mainnet
+            </button>
+          </div>
+        </li>
+      </ul>
+    </nav>
+
+    <main>
+        <section class="content-section">
+          <h2>Your Team</h2>
+  
+          <div class="team-grid">
+            <div class="team-card">
+              <h4>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                  <circle cx="9" cy="7" r="4"></circle>
+                  <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                  <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                </svg>
+                Total Team
+              </h4>
+              <div class="team-stats">
+                <div class="team-stat">
+                  <span class="label">Members:</span>
+                  <span class="value" id="totalTeamMembers">0</span>
+                </div>
+                <div class="team-stat">
+                  <span class="label">Total Stake:</span>
+                  <span class="value" id="totalTeamStake">0 VNST</span>
+                </div>
+              </div>
+            </div>
+    
+            <div class="team-card">
+              <h4>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                  <circle cx="9" cy="7" r="4"></circle>
+                </svg>
+                Direct Team (Level 1)
+              </h4>
+              <div class="team-stats">
+                <div class="team-stat">
+                  <span class="label">Members:</span>
+                  <span class="value" id="level1Count">0</span>
+                </div>
+                <div class="team-stat">
+                  <span class="label">Total Stake:</span>
+                  <span class="value" id="level1Stake">0 VNST</span>
+                </div>
+                <div class="team-stat">
+                  <span class="label">Status:</span>
+                  <span class="value" id="level1Status">Locked</span>
+                </div>
+              </div>
+            </div>
+    
+            <div class="team-card">
+              <h4>Level 2 Team</h4>
+              <div class="team-stats">
+                <div class="team-stat">
+                  <span class="label">Members:</span>
+                  <span class="value" id="level2Count">0</span>
+                </div>
+                <div class="team-stat">
+                  <span class="label">Total Stake:</span>
+                  <span class="value" id="level2Stake">0 VNST</span>
+                </div>
+                <div class="team-stat">
+                  <span class="label">Status:</span>
+                  <span class="value" id="level2Status">Locked</span>
+                </div>
+              </div>
+            </div>
+    
+            <div class="team-card">
+              <h4>Level 3 Team</h4>
+              <div class="team-stats">
+                <div class="team-stat">
+                  <span class="label">Members:</span>
+                  <span class="value" id="level3Count">0</span>
+                </div>
+                <div class="team-stat">
+                  <span class="label">Total Stake:</span>
+                  <span class="value" id="level3Stake">0 VNST</span>
+                </div>
+                <div class="team-stat">
+                  <span class="label">Status:</span>
+                  <span class="value" id="level3Status">Locked</span>
+                </div>
+              </div>
+            </div>
+    
+            <div class="team-card">
+              <h4>Level 4 Team</h4>
+              <div class="team-stats">
+                <div class="team-stat">
+                  <span class="label">Members:</span>
+                  <span class="value" id="level4Count">0</span>
+                </div>
+                <div class="team-stat">
+                  <span class="label">Total Stake:</span>
+                  <span class="value" id="level4Stake">0 VNST</span>
+                </div>
+                <div class="team-stat">
+                  <span class="label">Status:</span>
+                  <span class="value" id="level4Status">Locked</span>
+                </div>
+              </div>
+            </div>
+    
+            <div class="team-card">
+              <h4>Level 5 Team</h4>
+              <div class="team-stats">
+                <div class="team-stat">
+                  <span class="label">Members:</span>
+                  <span class="value" id="level5Count">0</span>
+                </div>
+                <div class="team-stat">
+                  <span class="label">Total Stake:</span>
+                  <span class="value" id="level5Stake">0 VNST</span>
+                </div>
+                <div class="team-stat">
+                  <span class="label">Status:</span>
+                  <span class="value" id="level5Status">Locked</span>
+                </div>
+              </div>
+            </div>
+          </div>
+  
+          <div class="level-card" style="margin-top: 3rem;">
+            <div class="level-header">
+              <div class="level-title">Team Statistics</div>
+              <div class="level-status status-unlocked">Active</div>
+            </div>
+            <div class="level-details">
+              <div class="level-detail">
+                <div class="label">Your Current Level</div>
+                <div class="value" id="userLevel">0</div>
+              </div>
+              <div class="level-detail">
+                <div class="label">Direct Income</div>
+                <div class="value" id="directIncome">0 USDT</div>
+              </div>
+              <div class="level-detail">
+                <div class="label">ROI Income</div>
+                <div class="value" id="roiIncome">0 USDT</div>
+              </div>
+              <div class="level-detail">
+                <div class="label">Total Referrals</div>
+                <div class="value" id="totalReferrals">0</div>
+              </div>
+            </div>
+          </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>© 2025 VNST Staking Platform. All rights reserved.</p>
+    </footer>
+
+    <script src="js/config.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/stake.js"></script>
+</body>
+</html>
