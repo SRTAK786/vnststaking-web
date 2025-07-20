@@ -153,12 +153,7 @@ window.addEventListener('DOMContentLoaded', async () => {
   } 
   else if (path.endsWith('stake.html')) {
     await initStakePage();
-
-    document.getElementById('approveMaxBtn')?.addEventListener('click', approveTokens);
-    document.getElementById('stakeBtn')?.addEventListener('click', stakeTokens);
-    document.getElementById('claimTokenBtn')?.addEventListener('click', claimRewards);
   }
-
   else if (path.endsWith('team.html')) {
     await initTeamPage();
   }
@@ -169,4 +164,12 @@ window.addEventListener('DOMContentLoaded', async () => {
   }
 });
 
-export { web3, accounts, isConnected, vnstTokenContract, stakingContract, connectWallet, initWeb3 };
+export { 
+  web3, 
+  accounts, 
+  isConnected, 
+  vnstTokenContract, 
+  stakingContract, 
+  connectWallet, 
+  initWeb3 
+};
