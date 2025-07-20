@@ -4,10 +4,7 @@ import {
   stakingContract, 
   vnstTokenContract, 
   web3,
-  connectWallet,
-  approveTokens,
-  stakeTokens,
-  claimRewards
+  connectWallet
 } from './main.js';
 import CONFIG from './config.js';
 
