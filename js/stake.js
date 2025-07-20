@@ -4,7 +4,9 @@ import {
   stakingContract, 
   vnstTokenContract, 
   web3,
-  connectWallet
+  connectWallet,
+  approveTokens,
+  stakeTokens
 } from './main.js';
 import CONFIG from './config.js';
 
@@ -25,33 +27,53 @@ export function initStakePage() {
 }
 
 async function loadStakingData() {
-  // वॉलेट बैलेंस
-  const balance = await vnstTokenContract.methods.balanceOf(accounts[0]).call();
-  document.getElementById('walletBalance').textContent = 
-    `${web3.utils.fromWei(balance, 'ether')} VNST`;
+  try {
+    if (!isConnected || !accounts[0]) return;
+
+    // वॉलेट बैलेंस
+    const balance = await vnstTokenContract.methods.balanceOf(accounts[0]).call();
+    document.getElementById('walletBalance').textContent = 
+      `${web3.utils.fromWei(balance, 'ether')} VNST`;
     
-  // यूजर का स्टेक्ड अमाउंट
-  const userStake = await stakingContract.methods.getUserStakeDetails(accounts[0]).call();
-  document.getElementById('userStakedAmount').textContent = 
-    `${web3.utils.fromWei(userStake.totalStake, 'ether')} VNST`;
+    // यूजर का स्टेक्ड अमाउंट
+    const userStake = await stakingContract.methods.getUserStakeDetails(accounts[0]).call();
+    document.getElementById('userStakedAmount').textContent = 
+      `${web3.utils.fromWei(userStake.totalStake, 'ether')} VNST`;
     
-  // पेंडिंग रिवॉर्ड्स
-  const rewards = await stakingContract.methods.getPendingRewards(accounts[0]).call();
-  document.getElementById('stakingRewards').textContent = 
-    `${web3.utils.fromWei(rewards[0], 'ether')} VNT`;
-  document.getElementById('directRewards').textContent = 
-    `${web3.utils.fromWei(rewards[1], 'ether')} USDT`;
+    // पेंडिंग रिवॉर्ड्स
+    const rewards = await stakingContract.methods.getPendingRewards(accounts[0]).call();
+    document.getElementById('stakingRewards').textContent = 
+      `${web3.utils.fromWei(rewards[0], 'ether')} VNT`;
+    document.getElementById('directRewards').textContent = 
+      `${web3.utils.fromWei(rewards[1], 'ether')} USDT`;
+      
+    console.log("Staking data loaded successfully");
+  } catch (error) {
+    console.error("Error loading staking data:", error);
+  }
 }
 
 function setupEventListeners() {
   const approveBtn = document.getElementById('approveMaxBtn');
   if (approveBtn) {
-    approveBtn.addEventListener('click', approveTokens);
+    approveBtn.addEventListener('click', async () => {
+      try {
+        await approveTokens();
+      } catch (error) {
+        console.error("Approval failed:", error);
+      }
+    });
   }
-  
+
   const stakeBtn = document.getElementById('stakeBtn');
   if (stakeBtn) {
-    stakeBtn.addEventListener('click', stakeTokens);
+    stakeBtn.addEventListener('click', async () => {
+      try {
+        await stakeTokens();
+      } catch (error) {
+        console.error("Staking failed:", error);
+      }
+    });
   }
   
   const claimBtn = document.getElementById('claimTokenBtn');
