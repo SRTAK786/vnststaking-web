@@ -1,18 +1,25 @@
-import { isConnected, accounts, stakingContract } from './main.js';
+import { 
+  isConnected, 
+  accounts, 
+  stakingContract,
+  connectWallet,
+  web3
+} from './main.js';
 
-// टीम पेज इनिशियलाइज़ेशन
-document.addEventListener('DOMContentLoaded', async () => {
-  if (!isConnected) {
-    showConnectWalletMessage();
-    return;
-  }
-  
-  try {
-    await loadTeamData();
-  } catch (error) {
-    console.error("टीम डेटा लोड करने में त्रुटि:", error);
-  }
-});
+export function initTeamPage() {
+  document.addEventListener('DOMContentLoaded', async () => {
+    if (!isConnected) {
+      showConnectWalletMessage();
+      return;
+    }
+    
+    try {
+      await loadTeamData();
+    } catch (error) {
+      console.error("टीम डेटा लोड करने में त्रुटि:", error);
+    }
+  });
+}
 
 async function loadTeamData() {
   // यूजर लेवल डेटा
@@ -28,6 +35,7 @@ async function loadTeamData() {
       // अन्य डेटा अपडेट...
     } catch (error) {
       console.error(`लेवल ${i} डेटा लोड करने में त्रुटि:`, error);
+      document.getElementById(`level${i}Count`).textContent = "0 Members";
     }
   }
 }
