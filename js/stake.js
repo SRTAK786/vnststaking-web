@@ -1,6 +1,5 @@
 import { isConnected, accounts, stakingContract } from './main.js';
 
-
 // स्टेक पेज इनिशियलाइज़ेशन
 document.addEventListener('DOMContentLoaded', async () => {
   if (!isConnected) {
