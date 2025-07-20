@@ -44,11 +44,19 @@ async function loadStakingData() {
       `${web3.utils.fromWei(rewards[0], 'ether')} VNT`;
     document.getElementById('directRewards').textContent = 
       `${web3.utils.fromWei(rewards[1], 'ether')} USDT`;
+
+    await updateStakingLimits();
       
     console.log("Staking data loaded successfully");
   } catch (error) {
     console.error("Error loading staking data:", error);
   }
+}
+
+async function updateStakingLimits() {
+  const limits = await stakingContract.methods.getMinWithdrawInfo().call();
+  document.getElementById('minVNTWithdraw').textContent = web3.utils.fromWei(limits[0], 'ether');
+  document.getElementById('minUSDTWithdraw').textContent = web3.utils.fromWei(limits[1], 'ether');
 }
 
 function setupEventListeners() {
