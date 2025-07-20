@@ -1,4 +1,7 @@
 import CONFIG from './config.js';
+import { initHomePage } from './home.js';
+import { initStakePage } from './stake.js';
+import { initTeamPage } from './team.js';
 
 // ग्लोबल वेरिएबल्स
 let web3;
@@ -21,7 +24,7 @@ function setupNetworkSwitcher() {
           params: [{ chainId: `0x${CONFIG.currentNetwork.chainId.toString(16)}` }],
         });
         
-        await initWeb3();  // कॉन्ट्रैक्ट्स रीइनिशियलाइज़ करें
+        await initWeb3();
         updateNetworkIndicator();
         location.reload();
       } catch (error) {
@@ -38,7 +41,6 @@ function updateNetworkIndicator() {
     networkIndicator.textContent = CONFIG.currentNetworkType === 'testnet' ? 'Testnet' : 'Mainnet';
     networkIndicator.style.backgroundColor = CONFIG.currentNetworkType === 'testnet' ? '#ff9800' : '#4caf50';
     
-    // स्विच बटन टेक्स्ट अपडेट
     const switchBtn = document.getElementById('networkSwitchBtn');
     if (switchBtn) {
       switchBtn.textContent = CONFIG.currentNetworkType === 'testnet' 
@@ -90,7 +92,6 @@ function initContracts() {
   }
 }
 
-// वॉलेट कनेक्ट करने का फंक्शन
 async function connectWallet() {
   try {
     if (!window.ethereum) {
@@ -104,14 +105,13 @@ async function connectWallet() {
     if (isConnected) {
       updateWalletButton();
       await initWeb3();
-      window.location.reload(); // UI अपडेट के लिए पेज रिफ्रेश
+      window.location.reload();
     }
   } catch (error) {
     console.error("वॉलेट कनेक्शन में त्रुटि:", error);
   }
 }
 
-// वॉलेट बटन अपडेट
 function updateWalletButton() {
   const connectBtn = document.getElementById('connectWalletBtn');
   if (!connectBtn) return;
@@ -126,9 +126,14 @@ function updateWalletButton() {
   }
 }
 
-// पेज लोड होने पर इनिशियलाइज़ेशन
+function toggleMobileMenu() {
+  const navMenu = document.getElementById('navMenu');
+  if (navMenu) {
+    navMenu.classList.toggle('show');
+  }
+}
+
 window.addEventListener('DOMContentLoaded', async () => {
-  // वॉलेट बटन के लिए इवेंट लिस्नर
   const connectBtn = document.getElementById('connectWalletBtn');
   if (connectBtn) {
     connectBtn.addEventListener('click', connectWallet);
@@ -137,25 +142,26 @@ window.addEventListener('DOMContentLoaded', async () => {
   setupNetworkSwitcher();
   updateNetworkIndicator();
   
-  // मोबाइल मेनू बटन
   const mobileMenuBtn = document.getElementById('mobileMenuBtn');
   if (mobileMenuBtn) {
     mobileMenuBtn.addEventListener('click', toggleMobileMenu);
   }
   
-  // अगर वॉलेट पहले से कनेक्टेड है
+  const path = window.location.pathname;
+  if (path.endsWith('index.html') || path === '/') {
+    await initHomePage();
+  } 
+  else if (path.endsWith('stake.html')) {
+    await initStakePage();
+  }
+  else if (path.endsWith('team.html')) {
+    await initTeamPage();
+  }
+  
   if (window.ethereum && window.ethereum.selectedAddress) {
     await initWeb3();
     updateWalletButton();
   }
 });
-
-// मोबाइल मेनू टॉगल
-function toggleMobileMenu() {
-  const navMenu = document.getElementById('navMenu');
-  if (navMenu) {
-    navMenu.classList.toggle('show');
-  }
-}
 
 export { web3, accounts, isConnected, vnstTokenContract, stakingContract };
