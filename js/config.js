@@ -73,4 +73,4 @@ const CONFIG = {
   NETWORKS
 };
 
-module.exports = CONFIG;
+export default CONFIG;
