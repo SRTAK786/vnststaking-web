@@ -76,14 +76,20 @@ function setupEventListeners() {
   
   const claimBtn = document.getElementById('claimTokenBtn');
   if (claimBtn) {
-    claimBtn.addEventListener('click', claimRewards);
+    claimBtn.addEventListener('click', async () => {
+      try {
+        await claimRewards();
+      } catch (error) {
+        console.error("Claim failed:", error);
+      }
+    });
   }
 }
 
 async function approveTokens() {
   try {
     const maxAmount = web3.utils.toWei('10000', 'ether');
-    await vnstTokenContract.methods.approve(CONFIG.stakingAddress, maxAmount)
+    await vnstTokenContract.methods.approve(stakingContract.options.address, maxAmount)
       .send({ from: accounts[0] });
     alert("अप्रूवल सफल! अब आप VNST टोकन स्टेक कर सकते हैं");
   } catch (error) {
@@ -111,6 +117,18 @@ async function stakeTokens() {
   } catch (error) {
     console.error("स्टेकिंग में त्रुटि:", error);
     alert(`स्टेकिंग विफल: ${error.message}`);
+  }
+}
+
+async function claimRewards() {
+  try {
+    await stakingContract.methods.claimRewards()
+      .send({ from: accounts[0] });
+    alert("रिवॉर्ड्स क्लेम सफल!");
+    await loadStakingData();
+  } catch (error) {
+    console.error("रिवॉर्ड्स क्लेम में त्रुटि:", error);
+    alert(`रिवॉर्ड्स क्लेम विफल: ${error.message}`);
   }
 }
 
