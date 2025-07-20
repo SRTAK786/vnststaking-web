@@ -250,6 +250,18 @@ body::before {
   transition: all 0.3s ease;
 }
 
+#stakeBtn {background:linear-gradient(45deg,#9C27B0,#E91E63);box-shadow:0 4px 15px rgba(156,39,176,0.4);}
+#stakeBtn::before {background:linear-gradient(45deg,#E91E63,#9C27B0);}
+#stakeBtn:hover {box-shadow:0 8px 25px rgba(156,39,176,0.6),0 0 15px rgba(156,39,176,0.7);}
+
+#claimTokenBtn {background:linear-gradient(45deg,#2196F3,#03A9F4);box-shadow:0 4px 15px rgba(33,150,243,0.4);}
+#claimTokenBtn::before {background:linear-gradient(45deg,#03A9F4,#2196F3);}
+#claimTokenBtn:hover {box-shadow:0 8px 25px rgba(33,150,243,0.6),0 0 15px rgba(33,150,243,0.7);}
+
+#approveMaxBtn {background:linear-gradient(45deg,#FF9800,#FFC107);box-shadow:0 4px 15px rgba(255,152,0,0.4);}
+#approveMaxBtn::before {background:linear-gradient(45deg,#FFC107,#FF9800);}
+#approveMaxBtn:hover {box-shadow:0 8px 25px rgba(255,152,0,0.6),0 0 15px rgba(255,152,0,0.7);}
+
 input[type="text"], input[type="number"] {
   width:100%;
   padding:.8rem 1.2rem;
