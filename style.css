@@ -1,0 +1,441 @@
+/* Combined CSS with old color scheme and new card structures */
+:root {
+  /* Restoring old color scheme */
+  --primary-color: #001f3f;
+  --secondary-color: #ffb300;
+  --accent-color: #00d4ff;
+  --text-color: #ffffff;
+  --card-bg: rgba(0, 43, 92, 0.8);
+  --footer-bg: #001a35;
+  --hover-color: #ffa500;
+  --glass-effect: rgba(255, 255, 255, 0.05);
+  --glass-border: rgba(255, 255, 255, 0.1);
+  --neon-glow: 0 0 10px rgba(0, 212, 255, 0.7);
+  --button-glow: 0 0 15px rgba(255, 179, 0, 0.7);
+  
+  /* Adding new variables from new style.css */
+  --success-color: #2ecc71;
+  --warning-color: #f39c12;
+  --info-color: #3498db;
+}
+
+/* Keeping all the base styles from old CSS */
+* { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI', system-ui, -apple-system, sans-serif; }
+
+body {
+  background: linear-gradient(135deg, var(--primary-color), #004080);
+  color: var(--text-color);
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+  line-height:1.6;
+  overflow-x:hidden;
+  position:relative;
+}
+
+body::before {
+  content:'';
+  position:fixed;
+  top:0; left:0;
+  width:100%; height:100%;
+  background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="1" fill="white" opacity="0.1"/></svg>') repeat;
+  background-size:2%;
+  z-index:-1;
+  animation:particleMove 100s linear infinite;
+}
+
+.navbar {
+  display: flex;
+  flex-direction: column;
+  background: rgba(0, 31, 63, 0.9);
+  padding: 1rem 2rem;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.logo {
+  font-size: 1.8rem;
+  font-weight: bold;
+  align-self: flex-start; /* लोगो को बाएँ ले जाएं */
+  margin-bottom: 0.5rem;
+}
+
+.nav-links {
+  display: flex;
+  gap: 1.5rem;
+  align-self: flex-end; /* लिंक्स को दाएँ ले जाएं */
+}
+
+.logo { height:50px; transition:all .3s ease; filter:drop-shadow(0 0 5px rgba(255,179,0,0.5)); }
+.logo:hover { transform:scale(1.05); filter:drop-shadow(0 0 10px rgba(255,179,0,0.8)); }
+
+/* Button styles from old CSS */
+.btn, .wallet-connect-btn {
+  display:inline-block;
+  padding:.8rem 1.8rem;
+  font-size:1.1rem;
+  font-weight:600;
+  text-decoration:none;
+  border:none;
+  border-radius:50px;
+  cursor:pointer;
+  position:relative;
+  overflow:hidden;
+  z-index:1;
+  min-width:180px;
+  letter-spacing:1px;
+  text-transform:uppercase;
+  transition:all .3s ease;
+  margin: 5px 0;
+}
+
+/* ========== IMPORTANT: Keeping new card structures ========== */
+
+/* Home Page Stats Cards - New structure with old colors */
+.stats-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+  margin: 3rem 0;
+}
+
+.stat-card {
+  background: var(--card-bg);
+  border-radius: 15px;
+  padding: 2rem;
+  border: 1px solid var(--glass-border);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+  transition: all 0.3s ease;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.stat-card::before {
+  content:'';
+  position:absolute;
+  top:-2px; left:-2px; right:-2px; bottom:-2px;
+  background:linear-gradient(45deg,var(--secondary-color),var(--accent-color),var(--secondary-color));
+  background-size:200% 200%;
+  z-index:-1;
+  animation:gradientBorder 6s ease infinite;
+  border-radius:16px;
+  opacity:0.7;
+}
+
+.stat-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 35px rgba(0,0,0,0.4), var(--neon-glow);
+}
+
+.stat-card h3 {
+  color: var(--accent-color);
+  margin-bottom: 1rem;
+  font-size: 1.5rem;
+}
+
+.stat-card .value {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--secondary-color);
+  margin: 1rem 0;
+}
+
+.stat-card .label {
+  color: var(--text-color);
+  opacity: 0.8;
+  font-size: 0.9rem;
+}
+
+/* Staking Page Cards - New structure with old colors */
+.staking-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+  margin-top: 2rem;
+}
+
+.stake-card {
+  background: var(--card-bg);
+  border-radius: 15px;
+  padding: 2rem;
+  border: 1px solid var(--glass-border);
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.stake-card::before {
+  content:'';
+  position:absolute;
+  top:-2px; left:-2px; right:-2px; bottom:-2px;
+  background:linear-gradient(45deg,var(--secondary-color),var(--accent-color),var(--secondary-color));
+  background-size:200% 200%;
+  z-index:-1;
+  animation:gradientBorder 6s ease infinite;
+  border-radius:16px;
+  opacity:0.7;
+}
+
+.stake-card h3 {
+  color: var(--accent-color);
+  margin-bottom: 1.5rem;
+  font-size: 1.5rem;
+  border-bottom: 2px solid var(--glass-border);
+  padding-bottom: 0.5rem;
+}
+
+.stake-info {
+  margin: 1.5rem 0;
+}
+
+.stake-info-item {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px dashed var(--glass-border);
+}
+
+.stake-info-item .label {
+  color: var(--text-color);
+  opacity: 0.8;
+}
+
+.stake-info-item .value {
+  color: var(--secondary-color);
+  font-weight: 600;
+}
+
+/* Progress bars - keeping new structure */
+.progress-container {
+  margin: 1.5rem 0;
+}
+
+.progress-label {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+  color: var(--text-color);
+}
+
+.progress-bar {
+  height: 10px;
+  background: rgba(255, 179, 0, 0.2);
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent-color), var(--secondary-color));
+  border-radius: 5px;
+  transition: width 0.5s ease;
+}
+
+/* ========== STAKING PAGE STYLES ========== */
+.stake-btn {
+  padding: 10px 20px !important;
+  font-size: 14px !important;
+  width: auto !important;
+  background: linear-gradient(45deg, #ffb300, #ff9100);
+  border: none;
+  border-radius: 8px;
+  color: #001f3f;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+#stakeBtn {background:linear-gradient(45deg,#9C27B0,#E91E63);box-shadow:0 4px 15px rgba(156,39,176,0.4);}
+#stakeBtn::before {background:linear-gradient(45deg,#E91E63,#9C27B0);}
+#stakeBtn:hover {box-shadow:0 8px 25px rgba(156,39,176,0.6),0 0 15px rgba(156,39,176,0.7);}
+
+#claimTokenBtn {background:linear-gradient(45deg,#2196F3,#03A9F4);box-shadow:0 4px 15px rgba(33,150,243,0.4);}
+#claimTokenBtn::before {background:linear-gradient(45deg,#03A9F4,#2196F3);}
+#claimTokenBtn:hover {box-shadow:0 8px 25px rgba(33,150,243,0.6),0 0 15px rgba(33,150,243,0.7);}
+
+#approveMaxBtn {background:linear-gradient(45deg,#FF9800,#FFC107);box-shadow:0 4px 15px rgba(255,152,0,0.4);}
+#approveMaxBtn::before {background:linear-gradient(45deg,#FFC107,#FF9800);}
+#approveMaxBtn:hover {box-shadow:0 8px 25px rgba(255,152,0,0.6),0 0 15px rgba(255,152,0,0.7);}
+
+input[type="text"], input[type="number"] {
+  width:100%;
+  padding:.8rem 1.2rem;
+  margin-bottom:1rem;
+  background:rgba(255,255,255,0.1);
+  border:1px solid var(--glass-border);
+  border-radius:8px;
+  color:var(--text-color);
+  font-size:1rem;
+  transition:all .3s ease;
+  backdrop-filter:blur(5px);
+}
+input:focus {
+  outline:none;
+  border-color:var(--accent-color);
+  box-shadow:0 0 10px rgba(0,212,255,0.5);
+}
+::placeholder { color:rgba(255,255,255,0.6); }
+
+.modal {
+  display:none;
+  position:fixed; top:0; left:0; width:100%; height:100%;
+  background-color:rgba(0,0,0,0.7);
+  backdrop-filter:blur(5px);
+  z-index:2000;
+}
+.modal-content {
+  background:var(--card-bg);
+  margin:10% auto;
+  padding:2rem;
+  border:1px solid var(--glass-border);
+  border-radius:15px;
+  width:90%; max-width:500px;
+  box-shadow:0 5px 30px rgba(0,0,0,0.5);
+  animation:modalFadeIn .3s ease-out;
+}
+@keyframes modalFadeIn { from {opacity:0;transform:translateY(-50px);} to {opacity:1;transform:translateY(0);} }
+.close-modal {
+  position:absolute; top:1rem; right:1.5rem;
+  font-size:2rem;
+  color:var(--text-color);
+  cursor:pointer;
+  transition:all .3s ease;
+}
+.close-modal:hover { color:var(--secondary-color); transform:rotate(90deg); }
+
+
+/* Team Page Cards - New structure with old colors */
+.team-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+
+.team-card {
+  background: var(--card-bg);
+  border-radius: 12px;
+  padding: 1.5rem;
+  border: 1px solid var(--glass-border);
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.team-card::before {
+  content:'';
+  position:absolute;
+  top:-2px; left:-2px; right:-2px; bottom:-2px;
+  background:linear-gradient(45deg,var(--secondary-color),var(--accent-color),var(--secondary-color));
+  background-size:200% 200%;
+  z-index:-1;
+  animation:gradientBorder 6s ease infinite;
+  border-radius:16px;
+  opacity:0.7;
+}
+
+.team-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--neon-glow);
+}
+
+.team-card h4 {
+  color: var(--accent-color);
+  margin-bottom: 1rem;
+  font-size: 1.2rem;
+  display: flex;
+  align-items: center;
+}
+
+.team-stats {
+  margin-top: 1rem;
+}
+
+.team-stat {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+}
+
+.team-stat .label {
+  color: var(--text-color);
+  opacity: 0.8;
+  font-size: 0.9rem;
+}
+
+.team-stat .value {
+  color: var(--secondary-color);
+  font-weight: 600;
+}
+
+/* Keeping all animations from both files */
+@keyframes particleMove { 0%{background-position:0 0;} 100%{background-position:100% 100%;} }
+@keyframes gradientBorder {
+  0%{background-position:0% 50%;}
+  50%{background-position:100% 50%;}
+  100%{background-position:0% 50%;}
+}
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+  100% { transform: translateY(0px); }
+}
+
+/* Utility classes */
+.pulse {
+  animation: pulse 2s infinite;
+}
+.float {
+  animation: float 3s ease-in-out infinite;
+}
+
+/* Responsive adjustments */
+@media(max-width:768px){
+  .navbar{flex-direction:column;padding:1rem;}
+  nav ul{flex-direction:column;display:none;width:100%;text-align:center;margin-top:1rem;gap:1rem;}
+  nav ul.show{display:flex;}
+  .btn,.wallet-connect-btn{width:100%;margin-bottom:.5rem;}
+  .stats-container, .staking-container, .team-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.network-switcher {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.network-indicator {
+  padding: 5px 10px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: bold;
+  color: white;
+  background-color: #ff9800; /* टेस्टनेट के लिए ऑरेंज */
+}
+
+.network-switch-btn {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: white;
+  padding: 5px 15px;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.network-switch-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
