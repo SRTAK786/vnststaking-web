@@ -164,4 +164,4 @@ window.addEventListener('DOMContentLoaded', async () => {
   }
 });
 
-export { web3, accounts, isConnected, vnstTokenContract, stakingContract };
+export { web3, accounts, isConnected, vnstTokenContract, stakingContract, connectWallet };
