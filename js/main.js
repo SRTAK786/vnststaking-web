@@ -153,11 +153,11 @@ window.addEventListener('DOMContentLoaded', async () => {
   } 
   else if (path.endsWith('stake.html')) {
     await initStakePage();
-  }
 
     document.getElementById('approveMaxBtn')?.addEventListener('click', approveTokens);
     document.getElementById('stakeBtn')?.addEventListener('click', stakeTokens);
     document.getElementById('claimTokenBtn')?.addEventListener('click', claimRewards);
+  }
 
   else if (path.endsWith('team.html')) {
     await initTeamPage();
