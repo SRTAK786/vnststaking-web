@@ -157,3 +157,5 @@ function toggleMobileMenu() {
     navMenu.classList.toggle('show');
   }
 }
+
+export { web3, accounts, isConnected, vnstTokenContract, stakingContract };
