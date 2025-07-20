@@ -1,3 +1,5 @@
+import { isConnected, accounts, stakingContract } from './main.js';
+
 // टीम पेज इनिशियलाइज़ेशन
 document.addEventListener('DOMContentLoaded', async () => {
   if (!isConnected) {
