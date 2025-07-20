@@ -1,19 +1,28 @@
-import { isConnected, accounts, stakingContract } from './main.js';
+import { 
+  isConnected, 
+  accounts, 
+  stakingContract, 
+  vnstTokenContract, 
+  web3,
+  connectWallet
+} from './main.js';
+import CONFIG from './config.js';
 
-// स्टेक पेज इनिशियलाइज़ेशन
-document.addEventListener('DOMContentLoaded', async () => {
-  if (!isConnected) {
-    showConnectWalletMessage();
-    return;
-  }
-  
-  try {
-    await loadStakingData();
-    setupEventListeners();
-  } catch (error) {
-    console.error("स्टेक पेज इनिशियलाइज़ेशन में त्रुटि:", error);
-  }
-});
+export function initStakePage() {
+  document.addEventListener('DOMContentLoaded', async () => {
+    if (!isConnected) {
+      showConnectWalletMessage();
+      return;
+    }
+    
+    try {
+      await loadStakingData();
+      setupEventListeners();
+    } catch (error) {
+      console.error("स्टेक पेज इनिशियलाइज़ेशन में त्रुटि:", error);
+    }
+  });
+}
 
 async function loadStakingData() {
   // वॉलेट बैलेंस
