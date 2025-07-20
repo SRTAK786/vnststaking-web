@@ -169,4 +169,4 @@ window.addEventListener('DOMContentLoaded', async () => {
   }
 });
 
-export { web3, accounts, isConnected, vnstTokenContract, stakingContract, connectWallet, initWeb3, approveTokens, stakeTokens, claimRewards };
+export { web3, accounts, isConnected, vnstTokenContract, stakingContract, connectWallet, initWeb3 };
