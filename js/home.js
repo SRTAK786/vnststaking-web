@@ -1,3 +1,5 @@
+import { isConnected, accounts } from './main.js';
+
 // होम पेज इनिशियलाइज़ेशन
 document.addEventListener('DOMContentLoaded', async () => {
   if (!isConnected) return;
