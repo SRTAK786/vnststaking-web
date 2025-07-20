@@ -6,7 +6,8 @@ import {
   web3,
   connectWallet,
   approveTokens,
-  stakeTokens
+  stakeTokens,
+  claimRewards
 } from './main.js';
 import CONFIG from './config.js';
 
