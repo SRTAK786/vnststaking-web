@@ -220,6 +220,7 @@ async function initHomePage() {
     }
   } catch (error) {
     console.error("Error loading home page data:", error);
+    alert("नेटवर्क में समस्या है, बाद में प्रयास करें");
   }
 }
 
@@ -263,6 +264,7 @@ async function loadStakingData() {
     await updateStakingLimits();
   } catch (error) {
     console.error("Error loading staking data:", error);
+    alert("डेटा लोड करने में समस्या, कृपया बाद में प्रयास करें");
   }
 }
 
@@ -391,6 +393,7 @@ async function loadTeamData() {
           `${web3.utils.fromWei(levelDeposits.levelDeposits[i-1], 'ether')} VNST`;
       } catch (error) {
         console.error(`Error loading level ${i} data:`, error);
+        alert("टीम डेटा लोड नहीं हो पाया");
         document.getElementById(`level${i}Count`).textContent = "0 Members";
       }
     }
