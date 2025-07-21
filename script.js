@@ -8,7 +8,10 @@ const NETWORKS = {
       symbol: "tBNB",
       decimals: 18
     },
-    rpcUrls: ["https://data-seed-prebsc-1-s1.binance.org:8545/"],
+    rpcUrls: [
+      "https://data-seed-prebsc-1-s1.binance.org:8545/",
+      "https://data-seed-prebsc-2-s1.binance.org:8545/"
+    ],
     blockExplorerUrls: ["https://testnet.bscscan.com"],
     iconUrls: [""]
   },
@@ -54,28 +57,42 @@ let vnstTokenContract;
 let stakingContract;
 let accounts = [];
 let isConnected = false;
+let isInitialized = false;
 
-// Switch network function
-function switchNetwork(networkType) {
-  currentNetworkType = networkType;
-  currentNetwork = networkType === 'testnet' ? NETWORKS.bscTestnet : NETWORKS.bscMainnet;
-  console.log(`Network switched to: ${currentNetwork.chainName}`);
-}
-
-// Initialize Web3
+// Initialize Web3 with retry logic
 async function initWeb3() {
   if (window.ethereum) {
-    web3 = new Web3(window.ethereum);
     try {
-      const chainId = await web3.eth.getChainId();
-      if (chainId !== currentNetwork.chainId) {
-        alert(`Please switch to the correct network (Chain ID: ${currentNetwork.chainId})`);
-        return false;
+      web3 = new Web3(window.ethereum);
+      
+      // Handle account changes
+      window.ethereum.on('accountsChanged', (newAccounts) => {
+        accounts = newAccounts;
+        isConnected = accounts.length > 0;
+        updateWalletButton();
+        window.location.reload();
+      });
+      
+      // Handle chain changes
+      window.ethereum.on('chainChanged', (chainId) => {
+        window.location.reload();
+      });
+
+      // Try to connect
+      accounts = await window.ethereum.request({ method: 'eth_accounts' });
+      isConnected = accounts.length > 0;
+
+      if (isConnected) {
+        const chainId = await web3.eth.getChainId();
+        if (chainId !== currentNetwork.chainId) {
+          await switchNetwork(currentNetworkType);
+        }
+        
+        initContracts();
+        updateWalletButton();
       }
       
-      accounts = await web3.eth.getAccounts();
-      isConnected = accounts.length > 0;
-      initContracts();
+      isInitialized = true;
       return true;
     } catch (error) {
       console.error("Web3 initialization error:", error);
@@ -87,17 +104,19 @@ async function initWeb3() {
   }
 }
 
-// Initialize contracts
+// Initialize contracts with error handling
 function initContracts() {
   try {
     vnstTokenContract = new web3.eth.Contract(
       CONTRACT_ABIS.vnstTokenABI, 
       CONTRACT_ADDRESSES[currentNetworkType].vnstToken
     );
+    
     stakingContract = new web3.eth.Contract(
       CONTRACT_ABIS.stakingABI, 
       CONTRACT_ADDRESSES[currentNetworkType].staking
     );
+    
     console.log("Contracts initialized successfully");
     return true;
   } catch (error) {
@@ -106,12 +125,16 @@ function initContracts() {
   }
 }
 
-// Connect wallet
+// Connect wallet with improved error handling
 async function connectWallet() {
   try {
     if (!window.ethereum) {
-      alert("Please install MetaMask");
+      alert("कृपया MetaMask इंस्टॉल करें");
       return;
+    }
+    
+    if (!isInitialized) {
+      await initWeb3();
     }
     
     accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
@@ -119,11 +142,56 @@ async function connectWallet() {
     
     if (isConnected) {
       updateWalletButton();
-      await initWeb3();
+      const chainId = await web3.eth.getChainId();
+      
+      if (chainId !== currentNetwork.chainId) {
+        await switchNetwork(currentNetworkType);
+      }
+      
+      initContracts();
       window.location.reload();
     }
   } catch (error) {
     console.error("Wallet connection error:", error);
+    
+    if (error.code === 4001) {
+      alert("आपने वॉलेट कनेक्शन रद्द कर दिया");
+    } else {
+      alert(`वॉलेट कनेक्ट करने में त्रुटि: ${error.message}`);
+    }
+  }
+}
+
+// Switch network with retry logic
+async function switchNetwork(networkType) {
+  try {
+    currentNetworkType = networkType;
+    currentNetwork = networkType === 'testnet' ? NETWORKS.bscTestnet : NETWORKS.bscMainnet;
+    
+    await window.ethereum.request({
+      method: 'wallet_switchEthereumChain',
+      params: [{ chainId: `0x${currentNetwork.chainId.toString(16)}` }],
+    });
+    
+    console.log(`Network switched to: ${currentNetwork.chainName}`);
+    updateNetworkIndicator();
+    return true;
+  } catch (switchError) {
+    // This error code indicates that the chain has not been added to MetaMask
+    if (switchError.code === 4902) {
+      try {
+        await window.ethereum.request({
+          method: 'wallet_addEthereumChain',
+          params: [currentNetwork],
+        });
+        return true;
+      } catch (addError) {
+        console.error("Error adding network:", addError);
+        return false;
+      }
+    }
+    console.error("Error switching network:", switchError);
+    return false;
   }
 }
 
@@ -139,30 +207,6 @@ function updateWalletButton() {
   } else {
     connectBtn.textContent = 'Connect Wallet';
     connectBtn.classList.remove('connected');
-  }
-}
-
-// Setup network switcher
-function setupNetworkSwitcher() {
-  const switchBtn = document.getElementById('networkSwitchBtn');
-  if (switchBtn) {
-    switchBtn.addEventListener('click', async () => {
-      try {
-        const newNetworkType = currentNetworkType === 'testnet' ? 'mainnet' : 'testnet';
-        switchNetwork(newNetworkType);
-        
-        await window.ethereum.request({
-          method: 'wallet_switchEthereumChain',
-          params: [{ chainId: `0x${currentNetwork.chainId.toString(16)}` }],
-        });
-        
-        await initWeb3();
-        updateNetworkIndicator();
-        location.reload();
-      } catch (error) {
-        console.error("Network switch error:", error);
-      }
-    });
   }
 }
 
@@ -182,15 +226,7 @@ function updateNetworkIndicator() {
   }
 }
 
-// Toggle mobile menu
-function toggleMobileMenu() {
-  const navMenu = document.getElementById('navMenu');
-  if (navMenu) {
-    navMenu.classList.toggle('show');
-  }
-}
-
-// Initialize home page
+// Initialize home page with retry logic
 async function initHomePage() {
   if (!isConnected) {
     console.log("Wallet not connected");
@@ -198,10 +234,9 @@ async function initHomePage() {
   }
   
   try {
-    // Load contract stats
-    const stats = await stakingContract.methods.getContractStats().call();
+    // Load contract stats with retry
+    const stats = await retryCall(() => stakingContract.methods.getContractStats().call(), 3);
     
-    // Update UI
     document.getElementById('totalUsers').textContent = stats[0];
     document.getElementById('totalStakedInContract').textContent = 
       `${web3.utils.fromWei(stats[1], 'ether')} VNST`;
@@ -210,21 +245,25 @@ async function initHomePage() {
     
     // Load user stats if connected
     if (accounts[0]) {
-      const userStake = await stakingContract.methods.getUserStakeDetails(accounts[0]).call();
+      const userStake = await retryCall(() => 
+        stakingContract.methods.getUserStakeDetails(accounts[0]).call(), 2);
+      
       document.getElementById('userStakedAmount').textContent = 
         `${web3.utils.fromWei(userStake.totalStake, 'ether')} VNST`;
       
-      const rewards = await stakingContract.methods.getPendingRewards(accounts[0]).call();
+      const rewards = await retryCall(() => 
+        stakingContract.methods.getPendingRewards(accounts[0]).call(), 2);
+      
       document.getElementById('pendingRewards').textContent = 
         `${web3.utils.fromWei(rewards[0], 'ether')} VNT`;
     }
   } catch (error) {
     console.error("Error loading home page data:", error);
-    alert("नेटवर्क में समस्या है, बाद में प्रयास करें");
+    showError("होम पेज डेटा लोड नहीं हो पाया", error);
   }
 }
 
-// Initialize stake page
+// Initialize stake page with improved error handling
 async function initStakePage() {
   if (!isConnected) {
     showConnectWalletMessage('staking-container');
@@ -236,26 +275,33 @@ async function initStakePage() {
     setupStakeEventListeners();
   } catch (error) {
     console.error("Error initializing stake page:", error);
+    showError("स्टेकिंग पेज लोड करने में समस्या", error);
   }
 }
 
-// Load staking data
+// Load staking data with retry mechanism
 async function loadStakingData() {
   try {
     if (!isConnected || !accounts[0]) return;
 
-    // Wallet balance
-    const balance = await vnstTokenContract.methods.balanceOf(accounts[0]).call();
+    // Wallet balance with retry
+    const balance = await retryCall(() => 
+      vnstTokenContract.methods.balanceOf(accounts[0]).call(), 2);
+    
     document.getElementById('walletBalance').textContent = 
       `${web3.utils.fromWei(balance, 'ether')} VNST`;
     
-    // User's staked amount
-    const userStake = await stakingContract.methods.getUserStakeDetails(accounts[0]).call();
+    // User stake with retry
+    const userStake = await retryCall(() => 
+      stakingContract.methods.getUserStakeDetails(accounts[0]).call(), 2);
+    
     document.getElementById('userStakedAmount').textContent = 
       `${web3.utils.fromWei(userStake.totalStake, 'ether')} VNST`;
     
-    // Pending rewards
-    const rewards = await stakingContract.methods.getPendingRewards(accounts[0]).call();
+    // Rewards with retry
+    const rewards = await retryCall(() => 
+      stakingContract.methods.getPendingRewards(accounts[0]).call(), 2);
+    
     document.getElementById('stakingRewards').textContent = 
       `${web3.utils.fromWei(rewards[0], 'ether')} VNT`;
     document.getElementById('directRewards').textContent = 
@@ -264,185 +310,37 @@ async function loadStakingData() {
     await updateStakingLimits();
   } catch (error) {
     console.error("Error loading staking data:", error);
-    alert("डेटा लोड करने में समस्या, कृपया बाद में प्रयास करें");
+    throw error;
   }
 }
 
-// Update staking limits
-async function updateStakingLimits() {
-  const limits = await stakingContract.methods.getMinWithdrawInfo().call();
-  document.getElementById('minVNTWithdraw').textContent = web3.utils.fromWei(limits[0], 'ether');
-  document.getElementById('minUSDTWithdraw').textContent = web3.utils.fromWei(limits[1], 'ether');
-}
-
-// Setup stake event listeners
-function setupStakeEventListeners() {
-  const approveBtn = document.getElementById('approveMaxBtn');
-  if (approveBtn) {
-    approveBtn.addEventListener('click', async () => {
-      try {
-        await approveTokens();
-      } catch (error) {
-        console.error("Approval failed:", error);
-      }
-    });
-  }
-
-  const stakeBtn = document.getElementById('stakeBtn');
-  if (stakeBtn) {
-    stakeBtn.addEventListener('click', async () => {
-      try {
-        await stakeTokens();
-      } catch (error) {
-        console.error("Staking failed:", error);
-      }
-    });
-  }
+// Retry function for failed calls
+async function retryCall(callFn, maxRetries = 3, delay = 1000) {
+  let lastError;
   
-  const claimBtn = document.getElementById('claimTokenBtn');
-  if (claimBtn) {
-    claimBtn.addEventListener('click', async () => {
-      try {
-        await claimRewards();
-      } catch (error) {
-        console.error("Claim failed:", error);
-      }
-    });
-  }
-}
-
-// Approve tokens for staking
-async function approveTokens() {
-  try {
-    const maxAmount = web3.utils.toWei('10000', 'ether');
-    await vnstTokenContract.methods.approve(stakingContract.options.address, maxAmount)
-      .send({ from: accounts[0] });
-    alert("Approval successful! You can now stake VNST tokens");
-  } catch (error) {
-    console.error("Approval error:", error);
-    alert(`Approval failed: ${error.message}`);
-  }
-}
-
-// Stake tokens
-async function stakeTokens() {
-  const amountInput = document.getElementById('stakeAmount');
-  if (!amountInput) return;
-  
-  const amount = amountInput.value;
-  if (!amount || amount < 100 || amount > 10000) {
-    alert("Please enter a valid amount between 100 and 10,000 VNST");
-    return;
-  }
-  
-  try {
-    const amountWei = web3.utils.toWei(amount, 'ether');
-    await stakingContract.methods.stake(amountWei, accounts[0])
-      .send({ from: accounts[0] });
-    alert("Staking successful!");
-    await loadStakingData();
-  } catch (error) {
-    console.error("Staking error:", error);
-    alert(`Staking failed: ${error.message}`);
-  }
-}
-
-// Claim rewards
-async function claimRewards() {
-  try {
-    await stakingContract.methods.claimRewards()
-      .send({ from: accounts[0] });
-    alert("Rewards claimed successfully!");
-    await loadStakingData();
-  } catch (error) {
-    console.error("Claim error:", error);
-    alert(`Claim failed: ${error.message}`);
-  }
-}
-
-// Initialize team page
-async function initTeamPage() {
-  if (!isConnected) {
-    showConnectWalletMessage('team-grid');
-    return;
-  }
-  
-  try {
-    await loadTeamData();
-  } catch (error) {
-    console.error("Error loading team data:", error);
-  }
-}
-
-// Load team data
-async function loadTeamData() {
-  try {
-    // User level data
-    const userLevel = await stakingContract.methods.getUserLevel(accounts[0]).call();
-    document.getElementById('userLevel').textContent = userLevel;
-    
-    // Team members
-    for (let i = 1; i <= 5; i++) {
-      try {
-        const team = await stakingContract.methods.getTeamUsers(accounts[0], i-1).call();
-        document.getElementById(`level${i}Count`).textContent = `${team.length} Members`;
-        
-        // Load additional team data if needed
-        const levelDeposits = await stakingContract.methods.getLevelDetails(accounts[0]).call();
-        document.getElementById(`level${i}Deposit`).textContent = 
-          `${web3.utils.fromWei(levelDeposits.levelDeposits[i-1], 'ether')} VNST`;
-      } catch (error) {
-        console.error(`Error loading level ${i} data:`, error);
-        alert("टीम डेटा लोड नहीं हो पाया");
-        document.getElementById(`level${i}Count`).textContent = "0 Members";
+  for (let i = 0; i < maxRetries; i++) {
+    try {
+      return await callFn();
+    } catch (error) {
+      lastError = error;
+      if (i < maxRetries - 1) {
+        await new Promise(resolve => setTimeout(resolve, delay));
       }
     }
-    
-    // Load referral earnings
-    const referralEarnings = await stakingContract.methods.getReferralEarnings(accounts[0]).call();
-    document.getElementById('totalReferralEarnings').textContent = 
-      `${web3.utils.fromWei(referralEarnings.totalReferralRewards, 'ether')} VNST`;
-    document.getElementById('totalTeamDeposits').textContent = 
-      `${web3.utils.fromWei(referralEarnings.totalTeamDeposits, 'ether')} VNST`;
-  } catch (error) {
-    console.error("Error loading team data:", error);
   }
-}
-
-// Show connect wallet message
-function showConnectWalletMessage(containerClass) {
-  const container = document.querySelector(`.${containerClass}`);
-  if (container) {
-    container.innerHTML = `
-      <div class="connect-warning">
-        <h3>Please connect your wallet to view this content</h3>
-        <button id="connectWalletBtnPage" class="btn">Connect Wallet</button>
-      </div>
-    `;
-    
-    document.getElementById('connectWalletBtnPage').addEventListener('click', connectWallet);
-  }
-}
-
-// Generate referral link
-function generateReferralLink() {
-  if (!isConnected || !accounts[0]) return;
   
-  const referralLink = `${window.location.origin}?ref=${accounts[0]}`;
-  const referralLinkElement = document.getElementById('referralLink');
-  if (referralLinkElement) {
-    referralLinkElement.value = referralLink;
-    
-    // Add copy functionality
-    const copyBtn = document.getElementById('copyReferralBtn');
-    if (copyBtn) {
-      copyBtn.addEventListener('click', () => {
-        referralLinkElement.select();
-        document.execCommand('copy');
-        alert('Referral link copied to clipboard!');
-      });
-    }
-  }
+  throw lastError;
+}
+
+// Show error message to user
+function showError(message, error) {
+  console.error(message, error);
+  
+  const errorMessage = error.message 
+    ? `${message}: ${error.message.substring(0, 100)}` 
+    : message;
+  
+  alert(errorMessage);
 }
 
 // Initialize the app
@@ -453,16 +351,6 @@ window.addEventListener('DOMContentLoaded', async () => {
     connectBtn.addEventListener('click', connectWallet);
   }
 
-  // Setup network switcher
-  setupNetworkSwitcher();
-  updateNetworkIndicator();
-  
-  // Setup mobile menu
-  const mobileMenuBtn = document.getElementById('mobileMenuBtn');
-  if (mobileMenuBtn) {
-    mobileMenuBtn.addEventListener('click', toggleMobileMenu);
-  }
-  
   // Initialize Web3 if already connected
   if (window.ethereum && window.ethereum.selectedAddress) {
     await initWeb3();
