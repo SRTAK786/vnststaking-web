@@ -126,40 +126,26 @@ function initContracts() {
 }
 
 // Connect wallet with improved error handling
-async function connectWallet() {
-  try {
-    if (!window.ethereum) {
-      alert("कृपया MetaMask इंस्टॉल करें");
-      return;
+async function connectMetaMask() {
+    try {
+        accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+        console.log("Connected account:", accounts[0]);
+        
+        isConnected = true;
+        updateWalletButton();
+        initContracts();
+        await updateUI();
+        
+        toggleWalletModal();
+    } catch (error) {
+        console.error("Connection failed:", error);
+        alert("Connection failed: " + error.message);
     }
-    
-    if (!isInitialized) {
-      await initWeb3();
-    }
-    
-    accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-    isConnected = accounts.length > 0;
-    
-    if (isConnected) {
-      updateWalletButton();
-      const chainId = await web3.eth.getChainId();
-      
-      if (chainId !== currentNetwork.chainId) {
-        await switchNetwork(currentNetworkType);
-      }
-      
-      initContracts();
-      window.location.reload();
-    }
-  } catch (error) {
-    console.error("Wallet connection error:", error);
-    
-    if (error.code === 4001) {
-      alert("आपने वॉलेट कनेक्शन रद्द कर दिया");
-    } else {
-      alert(`वॉलेट कनेक्ट करने में त्रुटि: ${error.message}`);
-    }
-  }
+}
+
+async function connectWalletConnect() {
+    alert("WalletConnect integration would go here in a full implementation");
+    toggleWalletModal();
 }
 
 // Switch network with retry logic
